@@ -3,7 +3,7 @@ import hashlib
 import json
 from pprint import pp
 from typing import Dict, List
-
+from datetime import datetime, timezone, timedelta
 
 class Block:
     def __init__(
@@ -30,7 +30,7 @@ class Block:
 def create_genesis_block() -> Block:
     gen_block = Block(
         index=0,
-        timestamp=str(datetime.utcnow()),
+        timestamp=str(datetime.now(timezone(timedelta(hours=-3)))),
         transactions=[],
         prev_hash="0",
         nonce=0,
@@ -40,9 +40,11 @@ def create_genesis_block() -> Block:
 
 
 def create_block_from_dict(block_data: Dict) -> Block:
+    clean_str = block_data['timestamp'].split()[0] + " " + block_data['timestamp'].split()[1]
+    
     return Block(
         index=block_data["index"],
-        timestamp=block_data["timestamp"],
+        timestamp=str(datetime.strptime(clean_str[:26], "%Y-%m-%d %H:%M:%S.%f") - timedelta(hours=3)),
         transactions=block_data["transactions"],
         prev_hash=block_data["prev_hash"],
         nonce=block_data["nonce"],
